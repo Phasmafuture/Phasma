@@ -40,7 +40,7 @@ export default function RunLeaderboard({
   }, [metrics.reward, currentIndex]);
 
   const currentRun = runs.find((r) => r.id === currentRunId);
-  const currentRunName = currentRun?.name || "Default Surgical RL Model";
+  const currentRunName = currentRun?.name || "Default Robot RL Model";
   const currentRunStatus = currentRun?.status || "running";
   const currentRunEpisodes = currentRun?.totalEpisodes || 1000;
 

@@ -16,7 +16,7 @@ export default function PhasmaLogo({
   return (
     <img
       src="/assets/PHASMA_White.PNG"
-      alt="PHASMA Robotics"
+      alt="PHASMA"
       className={`${sizeMap[size]} w-auto object-contain ${className}`}
     />
   );

@@ -16,16 +16,16 @@ interface CreateDemoRunDialogProps {
   onCreateRun: (
     name: string,
     description: string,
-    modelType: "surgical" | "humanoid",
+    modelType: "robot" | "humanoid",
   ) => void;
 }
 
 const MODELS = [
   {
-    id: "surgical" as const,
-    name: "Default Surgical RL Model",
+    id: "robot" as const,
+    name: "Default Robot RL Model",
     description:
-      "Three-arm da Vinci-style robotic system trained on laparoscopic surgical tasks with tool-tissue interaction feedback.",
+      "Three-arm da Vinci-style robotic system trained on laparoscopic tasks with tool-tissue interaction feedback.",
     icon: (
       <svg
         viewBox="0 0 40 40"
@@ -33,7 +33,7 @@ const MODELS = [
         className="w-8 h-8"
         aria-hidden="true"
       >
-        {/* Surgical arm icon - stylized robotic arm */}
+        {/* Robot arm icon - stylized robotic arm */}
         <circle cx="20" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
         <line
           x1="20"
@@ -175,8 +175,8 @@ export default function CreateDemoRunDialog({
   onOpenChange,
   onCreateRun,
 }: CreateDemoRunDialogProps) {
-  const [selectedModel, setSelectedModel] = useState<"surgical" | "humanoid">(
-    "surgical",
+  const [selectedModel, setSelectedModel] = useState<"robot" | "humanoid">(
+    "robot",
   );
 
   const handleCreate = () => {

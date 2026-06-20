@@ -1,24 +1,11 @@
 import PhasmaLogo from "@/components/brand/PhasmaLogo";
 import MobileNavDrawer from "@/components/layout/MobileNavDrawer";
-import ProfileModal from "@/components/profile/ProfileModal";
 import { Button } from "@/components/ui/button";
 import WorkspacePlanSwitcher from "@/components/workspace/WorkspacePlanSwitcher";
 import { useHeaderOffset } from "@/hooks/useHeaderOffset";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
-import { useSessionDisplayName } from "@/hooks/useSessionDisplayName";
-import { useGetUsername, useSetUsername } from "@/hooks/useUsername";
-import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import {
-  Activity,
-  BarChart3,
-  Home,
-  LogIn,
-  LogOut,
-  Menu,
-  User,
-} from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { Activity, BarChart3, Home, Menu } from "lucide-react";
+import { type ReactNode, useState } from "react";
 
 interface AppShellProps {
   children: ReactNode;
@@ -27,78 +14,16 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
   const router = useRouterState();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { login, clear, identity, isLoggingIn } = useInternetIdentity();
-  const { promptShown, markPromptAsShown, clearPrompt } =
-    useSessionDisplayName();
-  const { data: username, isFetched: usernameFetched } = useGetUsername();
-  const setUsernameMutation = useSetUsername();
-  const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   // Measure header height for mobile offset
   useHeaderOffset("app-header");
 
   const currentPath = router.location.pathname;
-  const isAuthenticated = !!identity;
-
-  // Normalize username to null if undefined
-  const currentUsername = username ?? null;
-
-  // Auto-open profile modal on first authenticated session without a username
-  useEffect(() => {
-    if (
-      isAuthenticated &&
-      !currentUsername &&
-      !promptShown &&
-      usernameFetched
-    ) {
-      setProfileModalOpen(true);
-    }
-  }, [isAuthenticated, currentUsername, promptShown, usernameFetched]);
-
-  const handleAuth = async () => {
-    if (isAuthenticated) {
-      await clear();
-      clearPrompt();
-      queryClient.clear();
-      // Clear plan cache on logout
-      try {
-        localStorage.removeItem("phasma_workspace_plan_mirror");
-      } catch (error) {
-        console.error("Failed to clear plan cache:", error);
-      }
-    } else {
-      try {
-        await login();
-      } catch (error: any) {
-        console.error("Login error:", error);
-        if (error.message === "User is already authenticated") {
-          await clear();
-          setTimeout(() => login(), 300);
-        }
-      }
-    }
-  };
-
-  const handleSaveUsername = async (name: string) => {
-    await setUsernameMutation.mutateAsync(name);
-    if (!promptShown) {
-      markPromptAsShown();
-    }
-  };
-
-  const handleDismissModal = () => {
-    if (!promptShown) {
-      markPromptAsShown();
-    }
-  };
 
   const handleNavigate = (path: string) => {
     navigate({ to: path });
   };
-
-  const displayLabel = currentUsername || "Set Username";
 
   return (
     <div className="min-h-screen bg-black">
@@ -198,46 +123,8 @@ export default function AppShell({ children }: AppShellProps) {
               </nav>
 
               {/* Plan Switcher */}
-              {isAuthenticated && (
-                <div className="border-l border-white/10 pl-4">
-                  <WorkspacePlanSwitcher />
-                </div>
-              )}
-
-              {/* Auth Controls */}
-              <div className="flex items-center gap-2 border-l border-white/10 pl-4">
-                {isAuthenticated ? (
-                  <>
-                    <Button
-                      onClick={() => setProfileModalOpen(true)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-300 hover:text-white hover:bg-white/5"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      {displayLabel}
-                    </Button>
-                    <Button
-                      onClick={handleAuth}
-                      variant="ghost"
-                      size="sm"
-                      className="text-gray-400 hover:text-white hover:bg-white/5"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    onClick={handleAuth}
-                    disabled={isLoggingIn}
-                    size="sm"
-                    className="bg-white text-black hover:bg-gray-200"
-                  >
-                    <LogIn className="w-4 h-4 mr-2" />
-                    {isLoggingIn ? "Signing In..." : "Sign In"}
-                  </Button>
-                )}
+              <div className="border-l border-white/10 pl-4">
+                <WorkspacePlanSwitcher />
               </div>
             </div>
           </div>
@@ -249,12 +136,7 @@ export default function AppShell({ children }: AppShellProps) {
         open={mobileDrawerOpen}
         onOpenChange={setMobileDrawerOpen}
         currentPath={currentPath}
-        isAuthenticated={isAuthenticated}
-        isLoggingIn={isLoggingIn}
-        username={currentUsername}
         onNavigate={handleNavigate}
-        onProfileClick={() => setProfileModalOpen(true)}
-        onAuthClick={handleAuth}
       />
 
       {/* Main Content with dynamic offset */}
@@ -274,21 +156,11 @@ export default function AppShell({ children }: AppShellProps) {
               © {new Date().getFullYear()} PHASMA
             </div>
             <div className="text-sm text-gray-400">
-              Decentralized Surgical Robotics RL Platform
+              Decentralized Robotics RL Platform
             </div>
           </div>
         </div>
       </footer>
-
-      {/* Profile Modal */}
-      <ProfileModal
-        open={profileModalOpen}
-        onOpenChange={setProfileModalOpen}
-        currentUsername={currentUsername}
-        onSave={handleSaveUsername}
-        onDismiss={handleDismissModal}
-        isSaving={setUsernameMutation.isPending}
-      />
     </div>
   );
 }

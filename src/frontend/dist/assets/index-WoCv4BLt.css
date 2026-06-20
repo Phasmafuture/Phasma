@@ -804,6 +804,9 @@ video {
 .mb-4 {
   margin-bottom: 1rem;
 }
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -1012,9 +1015,6 @@ video {
 .min-h-\[56px\] {
   min-height: 56px;
 }
-.min-h-\[60vh\] {
-  min-height: 60vh;
-}
 .min-h-screen {
   min-height: 100vh;
 }
@@ -1134,9 +1134,6 @@ video {
 .max-w-max {
   max-width: -moz-max-content;
   max-width: max-content;
-}
-.max-w-md {
-  max-width: 28rem;
 }
 .max-w-sm {
   max-width: 24rem;
@@ -1760,6 +1757,10 @@ video {
 .font-mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
@@ -1886,10 +1887,6 @@ video {
 .text-red-200 {
   --tw-text-opacity: 1;
   color: rgb(254 202 202 / var(--tw-text-opacity, 1));
-}
-.text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity, 1));
 }
 .text-secondary-foreground {
   color: oklch(var(--secondary-foreground));

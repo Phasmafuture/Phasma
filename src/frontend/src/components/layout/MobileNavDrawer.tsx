@@ -8,57 +8,25 @@ import {
 } from "@/components/ui/sheet";
 import WorkspacePlanSwitcher from "@/components/workspace/WorkspacePlanSwitcher";
 import { Link } from "@tanstack/react-router";
-import {
-  Activity,
-  BarChart3,
-  Home,
-  LogIn,
-  LogOut,
-  User,
-  X,
-} from "lucide-react";
+import { Activity, BarChart3, Home, X } from "lucide-react";
 
 interface MobileNavDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   currentPath: string;
-  isAuthenticated: boolean;
-  isLoggingIn: boolean;
-  username: string | null;
   onNavigate: (path: string) => void;
-  onProfileClick: () => void;
-  onAuthClick: () => void;
 }
 
 export default function MobileNavDrawer({
   open,
   onOpenChange,
   currentPath,
-  isAuthenticated,
-  isLoggingIn,
-  username,
   onNavigate,
-  onProfileClick,
-  onAuthClick,
 }: MobileNavDrawerProps) {
   const handleNavClick = (path: string) => {
     onNavigate(path);
     onOpenChange(false);
   };
-
-  const handleProfileClick = () => {
-    onProfileClick();
-    onOpenChange(false);
-  };
-
-  const handleAuthClick = () => {
-    onAuthClick();
-    if (!isAuthenticated) {
-      onOpenChange(false);
-    }
-  };
-
-  const displayLabel = username || "Set Username";
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -131,46 +99,8 @@ export default function MobileNavDrawer({
           </Link>
 
           {/* Plan Switcher */}
-          {isAuthenticated && (
-            <div className="border-t border-white/10 pt-4 mt-2">
-              <WorkspacePlanSwitcher />
-            </div>
-          )}
-
-          {/* Auth Controls */}
-          <div className="border-t border-white/10 pt-4 mt-4 flex flex-col gap-2">
-            {isAuthenticated ? (
-              <>
-                <Button
-                  onClick={handleProfileClick}
-                  variant="ghost"
-                  size="lg"
-                  className="w-full justify-start text-gray-300 hover:text-white hover:bg-white/5"
-                >
-                  <User className="w-5 h-5 mr-3" />
-                  {displayLabel}
-                </Button>
-                <Button
-                  onClick={handleAuthClick}
-                  variant="ghost"
-                  size="lg"
-                  className="w-full justify-start text-gray-400 hover:text-white hover:bg-white/5"
-                >
-                  <LogOut className="w-5 h-5 mr-3" />
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Button
-                onClick={handleAuthClick}
-                disabled={isLoggingIn}
-                size="lg"
-                className="w-full bg-white text-black hover:bg-gray-200"
-              >
-                <LogIn className="w-5 h-5 mr-3" />
-                {isLoggingIn ? "Signing In..." : "Sign In"}
-              </Button>
-            )}
+          <div className="border-t border-white/10 pt-4 mt-2">
+            <WorkspacePlanSwitcher />
           </div>
         </div>
       </SheetContent>

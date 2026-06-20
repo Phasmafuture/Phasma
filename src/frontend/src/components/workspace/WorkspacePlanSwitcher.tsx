@@ -1,23 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useInternetIdentity } from "@/hooks/useInternetIdentity";
 import { useWorkspacePlan } from "@/hooks/useWorkspacePlan";
 import { WorkspacePlan } from "@/types/workspacePlan";
 import { Loader2, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 export default function WorkspacePlanSwitcher() {
-  const { identity } = useInternetIdentity();
-  const isAuthenticated = !!identity;
   const { isPro, selectPlan, isSelecting } = useWorkspacePlan();
 
   const handleTogglePlan = async () => {
-    if (!isAuthenticated) {
-      toast.error("Please sign in to switch plans");
-      return;
-    }
-
     try {
       const newPlan = isPro ? WorkspacePlan.free : WorkspacePlan.pro;
       await selectPlan(newPlan);
@@ -50,7 +42,7 @@ export default function WorkspacePlanSwitcher() {
           </div>
           <Button
             onClick={handleTogglePlan}
-            disabled={!isAuthenticated || isSelecting}
+            disabled={isSelecting}
             size="sm"
             variant={isPro ? "outline" : "default"}
             className={

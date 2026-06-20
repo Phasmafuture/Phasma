@@ -12,7 +12,7 @@ interface Workspace3DProps {
   totalEpisodes: number;
   robotControls?: RobotControlState;
   onCameraReset?: () => void;
-  modelType?: "surgical" | "humanoid";
+  modelType?: "robot" | "humanoid";
 }
 
 export interface RobotControlState {
@@ -374,7 +374,7 @@ function HumanoidFigure({ playback, totalEpisodes }: HumanoidFigureProps) {
   const wfMatDim = <meshBasicMaterial color="#888888" wireframe />;
 
   return (
-    // Positioned at x:-2.5, separate space from surgical robot on right
+    // Positioned at x:-2.5, separate space from robot on right
     <group ref={groupRef} position={[-2.5, 0, 0]}>
       {/* Feet */}
       <mesh position={[-0.12, 0.06, 0.05]}>
@@ -513,7 +513,7 @@ function Scene({
   totalEpisodes,
   robotControls,
   onContactPointsUpdate,
-  modelType = "surgical",
+  modelType = "robot",
 }: SceneProps) {
   const endEffectorPositions = useRef<Map<string, THREE.Vector3>>(new Map());
   const tissueCenter = useMemo(() => new THREE.Vector3(0.7, 0.15, 0.5), []);
@@ -528,7 +528,7 @@ function Scene({
 
   const contactPoints = useMemo(() => {
     const contacts: ContactPoint[] = [];
-    if (targetPose.phase !== "contact" || modelType !== "surgical") {
+    if (targetPose.phase !== "contact" || modelType !== "robot") {
       return contacts;
     }
     for (const armId of ["arm1", "arm2", "arm3"]) {
@@ -563,10 +563,10 @@ function Scene({
       />
       <pointLight position={[-3, 4, -3]} intensity={0.3} color="#ffffff" />
 
-      {/* Extended work surface — covers both surgical and humanoid zones */}
+      {/* Extended work surface — covers both robot and humanoid zones */}
       <WorkSurface />
 
-      {modelType === "surgical" ? (
+      {modelType === "robot" ? (
         <>
           <PatientSideCart />
           <DaVinciArm
@@ -614,7 +614,7 @@ const Workspace3D = forwardRef<Workspace3DHandle, Workspace3DProps>(
       totalEpisodes,
       robotControls,
       onCameraReset,
-      modelType = "surgical",
+      modelType = "robot",
     },
     ref,
   ) => {

@@ -5,10 +5,8 @@ import {
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AppShell from "./components/layout/AppShell";
 import AdvancedAnalytics from "./pages/AdvancedAnalytics";
-import AuthRedirect from "./pages/AuthRedirect";
 import Dashboard from "./pages/Dashboard";
 import RunDetail from "./pages/RunDetail";
 import TrainingRuns from "./pages/TrainingRuns";
@@ -27,30 +25,16 @@ const indexRoute = createRoute({
   component: Dashboard,
 });
 
-const authRedirectRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/auth/redirect",
-  component: AuthRedirect,
-});
-
 const runsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/runs",
-  component: () => (
-    <ProtectedRoute>
-      <TrainingRuns />
-    </ProtectedRoute>
-  ),
+  component: TrainingRuns,
 });
 
 const runDetailRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/runs/$runId",
-  component: () => (
-    <ProtectedRoute>
-      <RunDetail />
-    </ProtectedRoute>
-  ),
+  component: RunDetail,
 });
 
 const analyticsRoute = createRoute({
@@ -61,7 +45,6 @@ const analyticsRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  authRedirectRoute,
   runsRoute,
   runDetailRoute,
   analyticsRoute,

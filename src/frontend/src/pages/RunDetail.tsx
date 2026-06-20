@@ -42,7 +42,17 @@ export default function RunDetail() {
   const { runId } = useParams({ from: "/runs/$runId" });
   const { runs } = useDemoRuns();
   const run = runs.find((r) => r.id === runId);
-  const modelType = run?.modelType ?? "surgical";
+  const modelType = run?.modelType ?? "robot";
+
+  // Auto-redirect if run not found
+  useEffect(() => {
+    if (!run) {
+      const timer = setTimeout(() => {
+        window.location.href = "/runs";
+      }, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [run]);
 
   // Record page view
   useEffect(() => {
@@ -133,8 +143,14 @@ export default function RunDetail() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Training run not found</p>
-          <Link to="/runs">
+          <h2 className="text-2xl font-bold text-white mb-2">Run not found</h2>
+          <p className="text-gray-400 mb-6">
+            This training run does not exist or may have been removed.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Redirecting to runs list...
+          </p>
+          <Link to="/runs" data-ocid="run.not_found.back_button">
             <Button
               variant="outline"
               className="border-white/20 text-white hover:bg-white/10"
@@ -235,7 +251,7 @@ export default function RunDetail() {
                   <CardDescription className="text-gray-400">
                     {modelType === "humanoid"
                       ? "Humanoid agent visualization"
-                      : "Interactive surgical robot visualization"}
+                      : "Interactive robot visualization"}
                   </CardDescription>
                 </div>
                 <Button
@@ -260,7 +276,7 @@ export default function RunDetail() {
             </CardContent>
           </Card>
 
-          {modelType === "surgical" ? (
+          {modelType === "robot" ? (
             <RobotControlsPanel
               controls={robotControls}
               onControlsChange={setRobotControls}

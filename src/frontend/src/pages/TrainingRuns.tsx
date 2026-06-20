@@ -35,7 +35,7 @@ export default function TrainingRuns() {
   const handleCreateRun = (
     name: string,
     description: string,
-    modelType: "surgical" | "humanoid" = "surgical",
+    modelType: "robot" | "humanoid" = "robot",
   ) => {
     createRun(name, description, modelType);
     recordActivity("run_created", { name, description, modelType });
@@ -114,8 +114,7 @@ export default function TrainingRuns() {
           <CardHeader>
             <CardTitle className="text-white">All Training Runs</CardTitle>
             <CardDescription className="text-gray-400">
-              Surgical and humanoid simulated training runs with precomputed
-              metrics
+              Simulated training runs with precomputed metrics
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -163,7 +162,7 @@ export default function TrainingRuns() {
                       </TableCell>
                       <TableCell>
                         <span className="text-xs px-2 py-0.5 rounded border border-white/15 text-gray-300 bg-white/5 capitalize">
-                          {run.modelType ?? "surgical"}
+                          {run.modelType ?? "robot"}
                         </span>
                       </TableCell>
                       <TableCell>

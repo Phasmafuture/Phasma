@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+const STORAGE_KEY = "phasma_demo_runs";
 
 export interface DemoRun {
   id: string;
@@ -7,15 +9,16 @@ export interface DemoRun {
   status: "running" | "completed";
   totalEpisodes: number;
   createdAt: string;
-  modelType: "surgical" | "humanoid";
+  modelType: "robot" | "humanoid";
 }
-
-const STORAGE_KEY = "phasma_demo_runs";
 
 function loadRuns(): DemoRun[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as DemoRun[];
+    if (!Array.isArray(parsed)) return [];
+    return parsed;
   } catch {
     return [];
   }
@@ -24,8 +27,8 @@ function loadRuns(): DemoRun[] {
 function saveRuns(runs: DemoRun[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(runs));
-  } catch (error) {
-    console.error("Failed to save runs:", error);
+  } catch {
+    // ignore storage errors
   }
 }
 
@@ -36,22 +39,25 @@ export function useDemoRuns() {
     saveRuns(runs);
   }, [runs]);
 
-  const createRun = (
-    name: string,
-    description: string,
-    modelType: "surgical" | "humanoid" = "surgical",
-  ) => {
-    const newRun: DemoRun = {
-      id: `run-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name,
-      description,
-      status: "completed",
-      totalEpisodes: 1000,
-      createdAt: new Date().toISOString(),
-      modelType,
-    };
-    setRuns((prev) => [newRun, ...prev]);
-  };
+  const createRun = useCallback(
+    (
+      name: string,
+      description: string,
+      modelType: "robot" | "humanoid" = "robot",
+    ) => {
+      const newRun: DemoRun = {
+        id: `run-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+        name,
+        description,
+        status: "completed",
+        totalEpisodes: 1000,
+        createdAt: new Date().toISOString(),
+        modelType,
+      };
+      setRuns((prev) => [newRun, ...prev]);
+    },
+    [],
+  );
 
   return { runs, createRun };
 }
