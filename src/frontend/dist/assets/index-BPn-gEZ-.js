@@ -24248,10 +24248,12 @@ const Info = createLucideIcon("info", __iconNode$b);
  * See the LICENSE file in the root directory of this source tree.
  */
 const __iconNode$a = [
-  ["rect", { width: "18", height: "11", x: "3", y: "11", rx: "2", ry: "2", key: "1w4ew1" }],
-  ["path", { d: "M7 11V7a5 5 0 0 1 10 0v4", key: "fwvmzm" }]
+  ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
+  ["path", { d: "m21 3-7 7", key: "1l2asr" }],
+  ["path", { d: "m3 21 7-7", key: "tjx5ai" }],
+  ["path", { d: "M9 21H3v-6", key: "wtvkvv" }]
 ];
-const Lock = createLucideIcon("lock", __iconNode$a);
+const Maximize2 = createLucideIcon("maximize-2", __iconNode$a);
 /**
  * @license lucide-react v0.511.0 - ISC
  *
@@ -25124,47 +25126,229 @@ function AppShell({ children }) {
         (/* @__PURE__ */ new Date()).getFullYear(),
         " PHASMA"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-gray-400", children: "Decentralized Robotics RL Platform" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-gray-400", children: "Decentralized Surgical Robotics RL Platform" })
     ] }) }) })
   ] });
 }
-function LockedSection({
-  children,
-  title = "Pro Feature"
+function HistogramChart({
+  data,
+  height = 280
 }) {
-  const { isPro, selectPlan, isSelecting } = useWorkspacePlan();
-  const handleUpgrade = async () => {
-    try {
-      await selectPlan(WorkspacePlan.pro);
-      ue.success("Upgraded to Pro plan");
-    } catch (error) {
-      console.error("Failed to upgrade:", error);
-      ue.error("Failed to upgrade to Pro");
+  const { rewardBars, lossBars, yTicks, barWidth } = reactExports.useMemo(() => {
+    const rewardMax = Math.max(...data.bins.map((b2) => b2.rewardCount), 1);
+    const lossMax = Math.max(...data.bins.map((b2) => b2.lossCount), 1);
+    const yMaxVal = Math.max(rewardMax, lossMax);
+    const yTicksArr = Array.from(
+      { length: 5 },
+      (_, i2) => Math.round(yMaxVal * (4 - i2) / 4)
+    );
+    const barCount = data.bins.length;
+    const groupWidth = 520 / barCount;
+    const barWidth2 = groupWidth * 0.35;
+    const gap = groupWidth * 0.15;
+    const rewardBarsArr = data.bins.map((bin, i2) => {
+      const x2 = 60 + i2 * groupWidth + gap;
+      const h2 = bin.rewardCount / yMaxVal * (height - 60);
+      return { x: x2, h: h2, count: bin.rewardCount, min: bin.min, max: bin.max };
+    });
+    const lossBarsArr = data.bins.map((bin, i2) => {
+      const x2 = 60 + i2 * groupWidth + gap + barWidth2 + 2;
+      const h2 = bin.lossCount / yMaxVal * (height - 60);
+      return { x: x2, h: h2, count: bin.lossCount, min: bin.min, max: bin.max };
+    });
+    return {
+      rewardBars: rewardBarsArr,
+      lossBars: lossBarsArr,
+      yTicks: yTicksArr,
+      barWidth: barWidth2
+    };
+  }, [data, height]);
+  const chartColors = [
+    "rgb(255,255,255)",
+    "rgb(229,229,229)",
+    "rgb(163,163,163)",
+    "rgb(115,115,115)",
+    "rgb(82,82,82)"
+  ];
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "svg",
+    {
+      width: "100%",
+      height,
+      viewBox: `0 0 600 ${height}`,
+      preserveAspectRatio: "xMidYMid meet",
+      role: "img",
+      "aria-label": "Reward and Loss histogram",
+      children: [
+        yTicks.map((_tick, i2) => {
+          const y = 20 + (height - 60) * i2 / 4;
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "line",
+            {
+              x1: 60,
+              y1: y,
+              x2: 580,
+              y2: y,
+              stroke: "rgba(255,255,255,0.08)",
+              strokeWidth: "1"
+            },
+            `grid-${_tick}`
+          );
+        }),
+        yTicks.map((_tick, i2) => {
+          const y = 20 + (height - 60) * i2 / 4;
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "text",
+            {
+              x: 50,
+              y: y + 4,
+              fill: "rgb(156,163,175)",
+              fontSize: "11",
+              textAnchor: "end",
+              children: _tick
+            },
+            `ylabel-${_tick}`
+          );
+        }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "text",
+          {
+            x: 20,
+            y: height / 2,
+            fill: "rgb(156,163,175)",
+            fontSize: "11",
+            textAnchor: "middle",
+            transform: `rotate(-90, 20, ${height / 2})`,
+            children: "Count"
+          }
+        ),
+        rewardBars.map((bar) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "rect",
+          {
+            x: bar.x,
+            y: height - 40 - bar.h,
+            width: barWidth,
+            height: bar.h,
+            fill: chartColors[0],
+            opacity: 0.9,
+            rx: "2",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("title", { children: [
+              "Reward: ",
+              bar.min.toFixed(1),
+              "–",
+              bar.max.toFixed(1),
+              " (count:",
+              " ",
+              bar.count,
+              ")"
+            ] })
+          },
+          `reward-${bar.min}`
+        )),
+        lossBars.map((bar) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "rect",
+          {
+            x: bar.x,
+            y: height - 40 - bar.h,
+            width: barWidth,
+            height: bar.h,
+            fill: chartColors[2],
+            opacity: 0.9,
+            rx: "2",
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("title", { children: [
+              "Loss: ",
+              bar.min.toFixed(1),
+              "–",
+              bar.max.toFixed(1),
+              " (count:",
+              " ",
+              bar.count,
+              ")"
+            ] })
+          },
+          `loss-${bar.min}`
+        )),
+        data.bins.map((bin, i2) => {
+          const groupWidth = 520 / data.bins.length;
+          const x2 = 60 + i2 * groupWidth + groupWidth / 2;
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "text",
+            {
+              x: x2,
+              y: height - 18,
+              fill: "rgb(156,163,175)",
+              fontSize: "10",
+              textAnchor: "middle",
+              children: bin.min.toFixed(0)
+            },
+            `xlabel-${bin.min}`
+          );
+        }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "text",
+          {
+            x: 320,
+            y: height - 2,
+            fill: "rgb(156,163,175)",
+            fontSize: "11",
+            textAnchor: "middle",
+            children: "Value"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { transform: "translate(420, 8)", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "rect",
+            {
+              x: "0",
+              y: "0",
+              width: "12",
+              height: "12",
+              fill: chartColors[0],
+              rx: "2"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("text", { x: "18", y: "10", fill: "rgb(200,200,200)", fontSize: "11", children: "Reward" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "rect",
+            {
+              x: "70",
+              y: "0",
+              width: "12",
+              height: "12",
+              fill: chartColors[2],
+              rx: "2"
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("text", { x: "88", y: "10", fill: "rgb(200,200,200)", fontSize: "11", children: "Loss" })
+        ] })
+      ]
     }
-  };
-  if (isPro) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children });
+  ) });
+}
+function generateDemoSeries(episodes) {
+  const reward = [];
+  const loss = [];
+  const successRate = [];
+  const policy1 = [];
+  const policy2 = [];
+  let rewardBase = -50;
+  let lossBase = 2.5;
+  let successBase = 10;
+  let policy1Base = 20;
+  let policy2Base = 15;
+  for (let i2 = 0; i2 < episodes; i2++) {
+    rewardBase += 0.15 + Math.random() * 0.1 - 0.05;
+    reward.push(rewardBase + (Math.random() - 0.5) * 5);
+    lossBase *= 0.9985;
+    loss.push(Math.max(0.1, lossBase + (Math.random() - 0.5) * 0.2));
+    successBase += (90 - successBase) * 3e-3 + (Math.random() - 0.5) * 2;
+    successRate.push(Math.max(0, Math.min(100, successBase)));
+    policy1Base += 0.08 + Math.random() * 0.05;
+    policy1.push(policy1Base + (Math.random() - 0.5) * 3);
+    policy2Base += 0.06 + Math.random() * 0.08;
+    policy2.push(policy2Base + (Math.random() - 0.5) * 4);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "blur-sm pointer-events-none select-none", children }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center p-6 max-w-sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: "w-8 h-8 text-white" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-white mb-2", children: title }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-gray-400 mb-4", children: "Upgrade to Pro to unlock advanced analytics and insights" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        Button,
-        {
-          onClick: handleUpgrade,
-          disabled: isSelecting,
-          className: "bg-white text-black hover:bg-gray-200",
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-4 h-4 mr-2" }),
-            "Upgrade to Pro (Demo)"
-          ]
-        }
-      )
-    ] }) })
-  ] });
+  return { reward, loss, successRate, policy1, policy2 };
 }
 function computeProjectUsage(runs) {
   const totalRuns = runs.length;
@@ -25185,10 +25369,80 @@ function computeProjectUsage(runs) {
     recentActivity
   };
 }
-function computeRunCompletionBreakdown(runs) {
+function computeMedian(sorted) {
+  const n = sorted.length;
+  if (n === 0) return 0;
+  if (n % 2 === 1) return sorted[Math.floor(n / 2)];
+  return (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+}
+function computeHistogramData(runs, binCount = 10) {
+  const allRewards = [];
+  const allLosses = [];
+  for (const run2 of runs) {
+    const series = generateDemoSeries(run2.totalEpisodes);
+    allRewards.push(...series.reward);
+    allLosses.push(...series.loss);
+  }
+  if (allRewards.length === 0 || allLosses.length === 0) {
+    const emptyBins = Array.from(
+      { length: binCount },
+      (_, i2) => ({
+        min: i2,
+        max: i2 + 1,
+        rewardCount: 0,
+        lossCount: 0
+      })
+    );
+    return {
+      bins: emptyBins,
+      rewardStats: { mean: 0, median: 0, max: 0 },
+      lossStats: { mean: 0, median: 0, max: 0 }
+    };
+  }
+  const rewardMin = Math.min(...allRewards);
+  const rewardMax = Math.max(...allRewards);
+  const lossMin = Math.min(...allLosses);
+  const lossMax = Math.max(...allLosses);
+  const globalMin = Math.min(rewardMin, lossMin);
+  const globalMax = Math.max(rewardMax, lossMax);
+  const range = globalMax - globalMin || 1;
+  const binSize = range / binCount;
+  const bins = Array.from({ length: binCount }, (_, i2) => ({
+    min: globalMin + i2 * binSize,
+    max: globalMin + (i2 + 1) * binSize,
+    rewardCount: 0,
+    lossCount: 0
+  }));
+  for (const value of allRewards) {
+    const idx = Math.min(
+      Math.floor((value - globalMin) / binSize),
+      binCount - 1
+    );
+    bins[idx].rewardCount++;
+  }
+  for (const value of allLosses) {
+    const idx = Math.min(
+      Math.floor((value - globalMin) / binSize),
+      binCount - 1
+    );
+    bins[idx].lossCount++;
+  }
+  const sortedRewards = [...allRewards].sort((a2, b2) => a2 - b2);
+  const sortedLosses = [...allLosses].sort((a2, b2) => a2 - b2);
+  const rewardMean = allRewards.reduce((sum, v2) => sum + v2, 0) / allRewards.length;
+  const lossMean = allLosses.reduce((sum, v2) => sum + v2, 0) / allLosses.length;
   return {
-    completed: runs.filter((r2) => r2.status === "completed").length,
-    running: runs.filter((r2) => r2.status === "running").length
+    bins,
+    rewardStats: {
+      mean: rewardMean,
+      median: computeMedian(sortedRewards),
+      max: rewardMax
+    },
+    lossStats: {
+      mean: lossMean,
+      median: computeMedian(sortedLosses),
+      max: lossMax
+    }
   };
 }
 const ACTIVITY_KEY = "phasma_activity_events";
@@ -25300,7 +25554,7 @@ function useDemoRuns() {
     saveRuns(runs);
   }, [runs]);
   const createRun = reactExports.useCallback(
-    (name, description, modelType = "robot") => {
+    (name, description, modelType = "surgical") => {
       const newRun = {
         id: `run-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
         name,
@@ -25317,32 +25571,12 @@ function useDemoRuns() {
   return { runs, createRun };
 }
 function AdvancedAnalytics() {
-  const { isPro, isFree } = useWorkspacePlan();
+  const { isPro } = useWorkspacePlan();
   const { runs } = useDemoRuns();
   const projectUsage = reactExports.useMemo(() => computeProjectUsage(runs), [runs]);
-  const completionBreakdown = reactExports.useMemo(
-    () => computeRunCompletionBreakdown(runs),
-    [runs]
-  );
+  const histogramData = reactExports.useMemo(() => computeHistogramData(runs, 10), [runs]);
   const activitySummary = reactExports.useMemo(() => getActivitySummary(), []);
   const performanceSummary = reactExports.useMemo(() => getPerformanceSummary(), []);
-  const chartData = [
-    {
-      label: "Completed",
-      value: completionBreakdown.completed,
-      color: "rgb(255, 255, 255)"
-    },
-    {
-      label: "Running",
-      value: completionBreakdown.running,
-      color: "rgb(156, 163, 175)"
-    }
-  ];
-  const maxValue = Math.max(
-    completionBreakdown.completed,
-    completionBreakdown.running,
-    1
-  );
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen bg-black", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "container mx-auto px-4 py-8", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
@@ -25362,10 +25596,9 @@ function AdvancedAnalytics() {
           }
         )
       ] }),
-      isFree && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-white/5 border border-white/10 rounded-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-gray-400", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-white/5 border border-white/10 rounded-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-gray-400", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-semibold text-white", children: "Demo Mode:" }),
-        " ",
-        "You're viewing a preview of Pro analytics. Some sections are locked. Upgrade to Pro to unlock all features."
+        " All features are visible in this demo."
       ] }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8", children: [
@@ -25401,37 +25634,68 @@ function AdvancedAnalytics() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-xl font-bold text-white mb-4 flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-5 h-5" }),
-        "Run Completion Breakdown"
+        "Reward & Loss Distribution"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(LockedSection, { title: "Pro Charts", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-white/5 border-white/10", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-white/5 border-white/10", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-white", children: "Completion Status" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: "Distribution of completed vs running training runs" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-white", children: "Episode Histogram" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: "Aggregated per-episode reward and loss across all stored runs" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: chartData.map((item) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-gray-300", children: item.label }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-medium text-white", children: item.value })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 md:grid-cols-3 gap-3 mb-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 border border-white/10 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-gray-400 mb-1 flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-3 h-3" }),
+                "Mean Reward"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-bold text-white", children: histogramData.rewardStats.mean.toFixed(2) })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 border border-white/10 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-gray-400 mb-1 flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-3 h-3" }),
+                "Median Reward"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-bold text-white", children: histogramData.rewardStats.median.toFixed(2) })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 border border-white/10 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-gray-400 mb-1 flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Maximize2, { className: "w-3 h-3" }),
+                "Max Reward"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-bold text-white", children: histogramData.rewardStats.max.toFixed(2) })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 border border-white/10 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-gray-400 mb-1 flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-3 h-3" }),
+                "Mean Loss"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-bold text-white", children: histogramData.lossStats.mean.toFixed(2) })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 border border-white/10 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-gray-400 mb-1 flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-3 h-3" }),
+                "Median Loss"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-bold text-white", children: histogramData.lossStats.median.toFixed(2) })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-3 bg-white/5 border border-white/10 rounded-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-gray-400 mb-1 flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Maximize2, { className: "w-3 h-3" }),
+                "Max Loss"
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-lg font-bold text-white", children: histogramData.lossStats.max.toFixed(2) })
+            ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full h-8 bg-white/5 rounded-lg overflow-hidden", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "h-full transition-all duration-500",
-              style: {
-                width: `${item.value / maxValue * 100}%`,
-                backgroundColor: item.color
-              }
-            }
-          ) })
-        ] }, item.label)) }) })
-      ] }) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(HistogramChart, { data: histogramData, height: 280 })
+        ] })
+      ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-xl font-bold text-white mb-4 flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { className: "w-5 h-5" }),
         "User Activity"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(LockedSection, { title: "Pro Activity Tracking", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-white/5 border-white/10", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-white", children: "Activity Summary" }),
@@ -25485,14 +25749,14 @@ function AdvancedAnalytics() {
             `${event.type}-${event.timestamp}`
           )) : /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-gray-500 text-center py-4", children: "No recent activity" }) }) })
         ] })
-      ] }) })
+      ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-xl font-bold text-white mb-4 flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-5 h-5" }),
         "Performance Metrics"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(LockedSection, { title: "Pro Performance Insights", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-white/5 border-white/10", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { className: "pb-3", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-sm font-medium text-gray-400", children: "Export Success Rate" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(CardContent, { children: [
@@ -25520,7 +25784,7 @@ function AdvancedAnalytics() {
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-3xl font-bold text-white", children: performanceSummary.avgRenderTime > 0 ? `${performanceSummary.avgRenderTime.toFixed(0)}ms` : "N/A" }) })
         ] })
-      ] }) })
+      ] })
     ] }),
     projectUsage.recentActivity.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-xl font-bold text-white mb-4 flex items-center gap-2", children: [
@@ -25546,7 +25810,7 @@ function Dashboard() {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center text-center mb-12 sm:mb-16 space-y-4 sm:space-y-6", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(PhasmaLogo, { size: "large" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight", children: "PHASMA" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg sm:text-xl text-gray-400 max-w-2xl px-4", children: "Decentralized platform for robotics reinforcement learning" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg sm:text-xl text-gray-400 max-w-2xl px-4", children: "Decentralized platform for surgical and humanoid robotics reinforcement learning" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 bg-green-500 rounded-full animate-pulse" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm text-gray-300", children: "Simulation Demo Environment" })
@@ -25556,7 +25820,7 @@ function Dashboard() {
       /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "bg-white/5 border-white/10 hover:bg-white/10 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Brain, { className: "w-8 h-8 text-white mb-2" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-white", children: "RL Training" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: "Robot and humanoid agent RL training simulations" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: "Surgical robot and humanoid agent RL training simulations" })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "bg-white/5 border-white/10 hover:bg-white/10 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(ChartLine, { className: "w-8 h-8 text-white mb-2" }),
@@ -25931,7 +26195,7 @@ function RunLeaderboard({
     return Math.max(...slice);
   }, [metrics.reward, currentIndex]);
   const currentRun = runs.find((r2) => r2.id === currentRunId);
-  const currentRunName = (currentRun == null ? void 0 : currentRun.name) || "Default Robot RL Model";
+  const currentRunName = (currentRun == null ? void 0 : currentRun.name) || "Default Surgical RL Model";
   const currentRunStatus = (currentRun == null ? void 0 : currentRun.status) || "running";
   const currentRunEpisodes = (currentRun == null ? void 0 : currentRun.totalEpisodes) || 1e3;
   const rankedEntries = reactExports.useMemo(() => {
@@ -83488,7 +83752,7 @@ function HumanoidFigure({ playback, totalEpisodes }) {
   const wfMat = /* @__PURE__ */ jsxRuntimeExports.jsx("meshBasicMaterial", { color: "#cccccc", wireframe: true });
   const wfMatDim = /* @__PURE__ */ jsxRuntimeExports.jsx("meshBasicMaterial", { color: "#888888", wireframe: true });
   return (
-    // Positioned at x:-2.5, separate space from robot on right
+    // Positioned at x:-2.5, separate space from surgical robot on right
     /* @__PURE__ */ jsxRuntimeExports.jsxs("group", { ref: groupRef, position: [-2.5, 0, 0], children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("mesh", { position: [-0.12, 0.06, 0.05], children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("boxGeometry", { args: [0.1, 0.06, 0.2] }),
@@ -83586,7 +83850,7 @@ function Scene2({
   totalEpisodes,
   robotControls,
   onContactPointsUpdate,
-  modelType = "robot"
+  modelType = "surgical"
 }) {
   const endEffectorPositions = reactExports.useRef(/* @__PURE__ */ new Map());
   const tissueCenter = reactExports.useMemo(() => new Vector3(0.7, 0.15, 0.5), []);
@@ -83598,7 +83862,7 @@ function Scene2({
   };
   const contactPoints = reactExports.useMemo(() => {
     const contacts = [];
-    if (targetPose.phase !== "contact" || modelType !== "robot") {
+    if (targetPose.phase !== "contact" || modelType !== "surgical") {
       return contacts;
     }
     for (const armId of ["arm1", "arm2", "arm3"]) {
@@ -83632,7 +83896,7 @@ function Scene2({
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx("pointLight", { position: [-3, 4, -3], intensity: 0.3, color: "#ffffff" }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(WorkSurface, {}),
-    modelType === "robot" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    modelType === "surgical" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(PatientSideCart, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         DaVinciArm,
@@ -83683,7 +83947,7 @@ const Workspace3D = reactExports.forwardRef(
     totalEpisodes,
     robotControls,
     onCameraReset,
-    modelType = "robot"
+    modelType = "surgical"
   }, ref) => {
     const controlsRef = reactExports.useRef(null);
     const contactPointsRef = reactExports.useRef([]);
@@ -83798,31 +84062,6 @@ function usePlaybackController(totalSteps) {
     reset,
     setSpeed
   };
-}
-function generateDemoSeries(episodes) {
-  const reward = [];
-  const loss = [];
-  const successRate = [];
-  const policy1 = [];
-  const policy2 = [];
-  let rewardBase = -50;
-  let lossBase = 2.5;
-  let successBase = 10;
-  let policy1Base = 20;
-  let policy2Base = 15;
-  for (let i2 = 0; i2 < episodes; i2++) {
-    rewardBase += 0.15 + Math.random() * 0.1 - 0.05;
-    reward.push(rewardBase + (Math.random() - 0.5) * 5);
-    lossBase *= 0.9985;
-    loss.push(Math.max(0.1, lossBase + (Math.random() - 0.5) * 0.2));
-    successBase += (90 - successBase) * 3e-3 + (Math.random() - 0.5) * 2;
-    successRate.push(Math.max(0, Math.min(100, successBase)));
-    policy1Base += 0.08 + Math.random() * 0.05;
-    policy1.push(policy1Base + (Math.random() - 0.5) * 3);
-    policy2Base += 0.06 + Math.random() * 0.08;
-    policy2.push(policy2Base + (Math.random() - 0.5) * 4);
-  }
-  return { reward, loss, successRate, policy1, policy2 };
 }
 function generateSnapshotFilename(runName) {
   const safeName = runName.replace(/[^a-zA-Z0-9-_]/g, "_").replace(/_+/g, "_").substring(0, 50);
@@ -83955,7 +84194,7 @@ function RunDetail() {
   const { runId } = useParams({ from: "/runs/$runId" });
   const { runs } = useDemoRuns();
   const run2 = runs.find((r2) => r2.id === runId);
-  const modelType = (run2 == null ? void 0 : run2.modelType) ?? "robot";
+  const modelType = (run2 == null ? void 0 : run2.modelType) ?? "surgical";
   reactExports.useEffect(() => {
     if (!run2) {
       const timer = setTimeout(() => {
@@ -84126,7 +84365,7 @@ function RunDetail() {
         /* @__PURE__ */ jsxRuntimeExports.jsx(CardHeader, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-white", children: "3D Workspace" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: modelType === "humanoid" ? "Humanoid agent visualization" : "Interactive robot visualization" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: modelType === "humanoid" ? "Humanoid agent visualization" : "Interactive surgical robot visualization" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             Button,
@@ -84153,7 +84392,7 @@ function RunDetail() {
           }
         ) })
       ] }),
-      modelType === "robot" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+      modelType === "surgical" ? /* @__PURE__ */ jsxRuntimeExports.jsx(
         RobotControlsPanel,
         {
           controls: robotControls,
@@ -84381,9 +84620,9 @@ function DialogDescription({
 }
 const MODELS = [
   {
-    id: "robot",
-    name: "Default Robot RL Model",
-    description: "Three-arm da Vinci-style robotic system trained on laparoscopic tasks with tool-tissue interaction feedback.",
+    id: "surgical",
+    name: "Default Surgical RL Model",
+    description: "Three-arm da Vinci-style robotic system trained on laparoscopic surgical tasks with tool-tissue interaction feedback.",
     icon: /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "svg",
       {
@@ -84576,7 +84815,7 @@ function CreateDemoRunDialog({
   onCreateRun
 }) {
   const [selectedModel, setSelectedModel] = reactExports.useState(
-    "robot"
+    "surgical"
   );
   const handleCreate = () => {
     const model = MODELS.find((m2) => m2.id === selectedModel);
@@ -84740,7 +84979,7 @@ function TrainingRuns() {
   reactExports.useEffect(() => {
     recordActivity("page_view", { page: "training_runs" });
   }, []);
-  const handleCreateRun = (name, description, modelType = "robot") => {
+  const handleCreateRun = (name, description, modelType = "surgical") => {
     createRun(name, description, modelType);
     recordActivity("run_created", { name, description, modelType });
     setIsCreateDialogOpen(false);
@@ -84785,7 +85024,7 @@ function TrainingRuns() {
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "bg-white/5 border-white/10", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(CardHeader, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(CardTitle, { className: "text-white", children: "All Training Runs" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: "Simulated training runs with precomputed metrics" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CardDescription, { className: "text-gray-400", children: "Surgical and humanoid simulated training runs with precomputed metrics" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(CardContent, { children: runs.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center py-12", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(CirclePlay, { className: "w-12 h-12 text-gray-600 mx-auto mb-4" }),
@@ -84817,7 +85056,7 @@ function TrainingRuns() {
                   /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-white", children: run2.name }),
                   run2.description && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm text-gray-400", children: run2.description })
                 ] }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs px-2 py-0.5 rounded border border-white/15 text-gray-300 bg-white/5 capitalize", children: run2.modelType ?? "robot" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs px-2 py-0.5 rounded border border-white/15 text-gray-300 bg-white/5 capitalize", children: run2.modelType ?? "surgical" }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(TableCell, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Badge,
                   {

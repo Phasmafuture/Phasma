@@ -9,7 +9,7 @@ export interface DemoRun {
   status: "running" | "completed";
   totalEpisodes: number;
   createdAt: string;
-  modelType: "robot" | "humanoid";
+  modelType: "surgical" | "humanoid";
 }
 
 function loadRuns(): DemoRun[] {
@@ -43,7 +43,7 @@ export function useDemoRuns() {
     (
       name: string,
       description: string,
-      modelType: "robot" | "humanoid" = "robot",
+      modelType: "surgical" | "humanoid" = "surgical",
     ) => {
       const newRun: DemoRun = {
         id: `run-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,

@@ -1,23 +1,19 @@
 {
-  "overview": "PHASMA is a public demo platform for surgical robotics reinforcement learning simulation with 3D visualization, real-time training playback, and a SaaS-style Pro workspace preview.",
+  "overview": "PHASMA is a decentralized SaaS platform for robotics reinforcement learning simulation and visualization with advanced analytics.",
   "features": [
-    "Fully public demo — no login required",
-    "3D surgical robot and humanoid model visualization",
-    "Real-time RL training simulation with reward and loss charts",
-    "Free vs Pro workspace switcher with advanced analytics preview",
-    "Mobile-optimized slide-out navigation",
-    "Selectable surgical robot or humanoid model for demo runs",
-    "Live training run leaderboard",
-    "Demo snapshot export"
+    "3D robotic workspace with selectable models",
+    "Real-time RL training visualizations",
+    "Advanced analytics with histogram charts",
+    "Demo-only Pro workspace",
+    "Mobile-optimized navigation"
   ],
-  "category": "simulation-platform",
+  "category": "saas",
   "tags": [
     "robotics",
     "reinforcement-learning",
     "3d-visualization",
-    "saas",
-    "demo",
-    "surgical"
+    "analytics",
+    "simulation"
   ],
-  "last_updated": "2026-06-12T08:24:20.056Z"
+  "last_updated": "2026-06-20T14:28:30.032Z"
 }

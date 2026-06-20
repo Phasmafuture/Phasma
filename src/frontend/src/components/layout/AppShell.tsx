@@ -156,7 +156,7 @@ export default function AppShell({ children }: AppShellProps) {
               © {new Date().getFullYear()} PHASMA
             </div>
             <div className="text-sm text-gray-400">
-              Decentralized Robotics RL Platform
+              Decentralized Surgical Robotics RL Platform
             </div>
           </div>
         </div>

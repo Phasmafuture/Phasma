@@ -42,7 +42,7 @@ export default function RunDetail() {
   const { runId } = useParams({ from: "/runs/$runId" });
   const { runs } = useDemoRuns();
   const run = runs.find((r) => r.id === runId);
-  const modelType = run?.modelType ?? "robot";
+  const modelType = run?.modelType ?? "surgical";
 
   // Auto-redirect if run not found
   useEffect(() => {
@@ -251,7 +251,7 @@ export default function RunDetail() {
                   <CardDescription className="text-gray-400">
                     {modelType === "humanoid"
                       ? "Humanoid agent visualization"
-                      : "Interactive robot visualization"}
+                      : "Interactive surgical robot visualization"}
                   </CardDescription>
                 </div>
                 <Button
@@ -276,7 +276,7 @@ export default function RunDetail() {
             </CardContent>
           </Card>
 
-          {modelType === "robot" ? (
+          {modelType === "surgical" ? (
             <RobotControlsPanel
               controls={robotControls}
               onControlsChange={setRobotControls}
